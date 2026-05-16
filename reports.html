@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatórios — TicketMS</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" style="display:none"></div>
+
+  
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">🎫</div>
+        <div class="sidebar-logo-text">Ticket<span>MS</span></div>
+      </div>
+    </div>
+
+    <nav class="sidebar-body">
+      <div class="nav-section-label">Principal</div>
+
+      <a class="nav-item" href="index.html">
+        <span class="nav-item-icon">📊</span>
+        Dashboard
+      </a>
+
+      <a class="nav-item" href="tickets.html">
+        <span class="nav-item-icon">🎫</span>
+        Tickets
+        <span class="nav-badge" id="ticketNavBadge">0</span>
+      </a>
+
+      <div class="nav-section-label">Gestão</div>
+
+      <a class="nav-item" href="clients.html">
+        <span class="nav-item-icon">👥</span>
+        Clientes
+      </a>
+
+      <a class="nav-item active" href="reports.html">
+        <span class="nav-item-icon">📈</span>
+        Relatórios
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user-card">
+        <div class="user-avatar">
+          <span id="userAvatarText">A</span>
+        </div>
+        <div class="user-meta">
+          <div class="user-name" id="userDisplayName">Admin</div>
+          <div class="user-role" id="userRoleLabel">Administrador</div>
+        </div>
+        <button class="logout-btn" id="logoutBtn" title="Sair">↩</button>
+      </div>
+    </div>
+  </aside>
+
+  
+  <div class="main-content">
+
+    
+    <header class="topbar">
+      <button class="topbar-toggle" id="sidebarToggle">☰</button>
+      <div class="topbar-info">
+        <h2>Relatórios</h2>
+        <p>Análises e métricas do sistema</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost" onclick="ReportsPage.render()">↺ Atualizar</button>
+      </div>
+    </header>
+
+    <div class="page-wrap">
+      <div class="page active" id="page-reports">
+
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2>Relatórios</h2>
+            <p>Análises e métricas do sistema</p>
+          </div>
+          <button class="btn btn-ghost" onclick="ReportsPage.render()">↺ Atualizar</button>
+        </div>
+
+        
+        <div class="reports-grid">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">🎫 Total de Tickets</span>
+            </div>
+            <div class="card-body">
+              <div class="big-number" id="repTotal">0</div>
+              <div class="big-number-sub">tickets no sistema</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">✅ Resolvidos &amp; Fechados</span>
+            </div>
+            <div class="card-body">
+              <div class="big-number" style="color:var(--p-low)" id="repResolved">0</div>
+              <div class="big-number-sub">
+                taxa de resolução: <strong id="repRate">0%</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">⏳ Tickets Pendentes</span>
+            </div>
+            <div class="card-body">
+              <div class="big-number" style="color:var(--p-med)" id="repPending">0</div>
+              <div class="big-number-sub">abertos + em andamento</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">👥 Clientes Ativos</span>
+            </div>
+            <div class="card-body">
+              <div class="big-number" style="color:#9b7ef8" id="repClients">0</div>
+              <div class="big-number-sub">clientes cadastrados</div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="reports-bottom">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">📊 Tickets por Status</span>
+            </div>
+            <div class="card-body">
+              <div class="status-breakdown" id="repStatusBreakdown"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">🔴 Tickets por Prioridade</span>
+            </div>
+            <div class="card-body">
+              <div class="status-breakdown" id="repPriorityBreakdown"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">🏆 Clientes com Mais Tickets</span>
+            </div>
+            <div class="card-body">
+              <div id="repTopClients"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">👷 Responsáveis</span>
+            </div>
+            <div class="card-body">
+              <div id="repAssignees"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/reports.js"></script>
+
+<script>
+  (function () {
+    // Auth guard
+    const session = Storage.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    Storage.seed();
+
+    // User info
+    const display = session.display || session.username;
+    document.getElementById('userDisplayName').textContent = display;
+    document.getElementById('userRoleLabel').textContent   = session.role;
+    document.getElementById('userAvatarText').textContent  =
+      display.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      Storage.clearSession();
+      window.location.href = 'login.html';
+    });
+
+    // Mobile sidebar
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      sidebar.classList.add('mobile-open');
+      overlay.style.display = 'block';
+    });
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('mobile-open');
+      overlay.style.display = 'none';
+    });
+
+    // Ticket badge
+    document.getElementById('ticketNavBadge').textContent =
+      Storage.getTickets().filter(t => t.status === 'open').length;
+
+    // Helpers required by ReportsPage
+    window.H = {
+      esc: s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),
+      avatarGradient: name => {
+        const palette = [
+          'linear-gradient(135deg,#5b8af4,#9b7ef8)',
+          'linear-gradient(135deg,#27c98f,#22d3ee)',
+          'linear-gradient(135deg,#f5a623,#ff6b35)',
+          'linear-gradient(135deg,#e84545,#f5a623)',
+          'linear-gradient(135deg,#9b7ef8,#e84585)',
+          'linear-gradient(135deg,#22d3ee,#5b8af4)',
+        ];
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+        return palette[Math.abs(h) % palette.length];
+      },
+      initials: name => name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase(),
+    };
+
+    // Render
+    ReportsPage.render();
+  })();
+</script>
+
+</body>
+</html>

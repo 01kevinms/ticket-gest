@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — TicketMS</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="login-page">
+
+  <div class="login-deco">
+    <div class="deco-grid"></div>
+
+    <div class="deco-brand">
+      <div class="deco-brand-mark">
+        <div class="brand-hex">🎫</div>
+        <div class="brand-wordmark">Ticket<span>MS</span></div>
+      </div>
+      <div class="deco-headline">
+        Gerencie<br>suporte <em>com<br>eficiência.</em>
+      </div>
+      <div class="deco-sub">
+        Plataforma unificada para acompanhar, priorizar e resolver chamados de suporte técnico.
+      </div>
+    </div>
+
+    <div class="deco-stats">
+      <div class="deco-stat">
+        <div class="deco-stat-num">98%</div>
+        <div class="deco-stat-lbl">Satisfação</div>
+      </div>
+      <div class="deco-stat">
+        <div class="deco-stat-num">4.2h</div>
+        <div class="deco-stat-lbl">Tempo médio</div>
+      </div>
+      <div class="deco-stat">
+        <div class="deco-stat-num">∞</div>
+        <div class="deco-stat-lbl">Escalável</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-form-panel">
+    <div class="login-box">
+      <div class="login-box-title">Bem-vindo de volta</div>
+      <div class="login-box-sub">Entre com suas credenciais para acessar o painel.</div>
+
+      <div class="login-error" id="loginError">
+        ⚠&nbsp; Usuário ou senha incorretos.
+      </div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="loginUsername">Usuário</label>
+          <input
+            class="form-control"
+            id="loginUsername"
+            type="text"
+            placeholder="admin"
+            autocomplete="username"
+            spellcheck="false"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Senha</label>
+          <input
+            class="form-control"
+            id="loginPassword"
+            type="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+        <div style="margin-top:6px">
+          <button class="btn btn-primary btn-block btn-lg" type="submit" id="loginBtn">
+            Entrar →
+          </button>
+        </div>
+      </form>
+
+      <div class="login-hint">
+        Credenciais demo: <strong>admin</strong> / <strong>admin</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

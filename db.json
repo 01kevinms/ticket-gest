@@ -1,0 +1,71 @@
+{
+  "clients": [
+    {
+      "id": "CLI001",
+      "name": "Acme Soluções",
+      "email": "contato@acme.com.br",
+      "phone": "(11) 91234-5678",
+      "company": "Acme Soluções LTDA",
+      "createdAt": "2025-01-10"
+    },
+    {
+      "id": "CLI002",
+      "name": "NovaTech",
+      "email": "ti@novatech.io",
+      "phone": "(21) 98765-4321",
+      "company": "NovaTech Sistemas",
+      "createdAt": "2025-01-18"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "TK0001",
+      "title": "Falha crítica no módulo de autenticação",
+      "description": "Usuários são desconectados automaticamente após 30 segundos de sessão ativa. O problema foi identificado após a última atualização de segurança (v2.4.1). Afeta todos os perfis de acesso.",
+      "clientId": "CLI001",
+      "priority": "urgent",
+      "status": "open",
+      "assignee": "Carlos Melo",
+      "createdAt": "2025-04-01"
+    },
+    {
+      "id": "TK0002",
+      "title": "Dashboard carrega lentamente (> 8s)",
+      "description": "A tela principal demora mais de 8 segundos para renderizar os gráficos. Identificado como gargalo na query de relatórios mensais sem índice adequado.",
+      "clientId": "CLI002",
+      "priority": "high",
+      "status": "progress",
+      "assignee": "Ana Ribeiro",
+      "createdAt": "2025-04-03"
+    },
+    {
+      "id": "TK0003",
+      "title": "Exportação de relatório PDF com erro",
+      "description": "Relatórios mensais exportados em PDF não incluem os dados da última semana. Problema provavelmente relacionado ao timezone do servidor.",
+      "clientId": "CLI001",
+      "priority": "medium",
+      "status": "resolved",
+      "assignee": "Pedro Alves",
+      "createdAt": "2025-04-05"
+    },
+    {
+      "id": "TK0004",
+      "title": "Integrar novo gateway de pagamento v3",
+      "description": "Cliente solicita migração para a nova versão da API do gateway Pagar.me (v3). Necessário atualizar webhooks e fluxos de captura de cobrança.",
+      "clientId": "CLI003",
+      "priority": "high",
+      "status": "open",
+      "assignee": "Maria Costa",
+      "createdAt": "2025-04-08"
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "password": "admin",
+      "role": "Administrador",
+      "display": "Admin"
+    }
+  ],
+  "sessions": {}
+}

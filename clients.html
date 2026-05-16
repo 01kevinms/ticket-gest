@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes — TicketMS</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" style="display:none"></div>
+
+  
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">🎫</div>
+        <div class="sidebar-logo-text">Ticket<span>MS</span></div>
+      </div>
+    </div>
+
+    <nav class="sidebar-body">
+      <div class="nav-section-label">Principal</div>
+
+      <a class="nav-item" href="index.html">
+        <span class="nav-item-icon">📊</span>
+        Dashboard
+      </a>
+
+      <a class="nav-item" href="tickets.html">
+        <span class="nav-item-icon">🎫</span>
+        Tickets
+        <span class="nav-badge" id="ticketNavBadge">0</span>
+      </a>
+
+      <div class="nav-section-label">Gestão</div>
+
+      <a class="nav-item active" href="clients.html">
+        <span class="nav-item-icon">👥</span>
+        Clientes
+      </a>
+
+      <a class="nav-item" href="reports.html">
+        <span class="nav-item-icon">📈</span>
+        Relatórios
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user-card">
+        <div class="user-avatar">
+          <span id="userAvatarText">A</span>
+        </div>
+        <div class="user-meta">
+          <div class="user-name" id="userDisplayName">Admin</div>
+          <div class="user-role" id="userRoleLabel">Administrador</div>
+        </div>
+        <button class="logout-btn" id="logoutBtn" title="Sair">↩</button>
+      </div>
+    </div>
+  </aside>
+
+  
+  <div class="main-content">
+
+    
+    <header class="topbar">
+      <button class="topbar-toggle" id="sidebarToggle">☰</button>
+      <div class="topbar-info">
+        <h2>Clientes</h2>
+        <p>Gerenciar clientes</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="search-field">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Buscar clientes…" autocomplete="off"
+            oninput="ClientsPage.setSearch(this.value)" />
+        </div>
+        <button class="btn btn-primary" onclick="ClientsPage.openCreate()">
+          ＋ Novo Cliente
+        </button>
+      </div>
+    </header>
+
+    <div class="page-wrap">
+      <div class="page active" id="page-clients">
+
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2>Clientes</h2>
+            <p id="clientsCount">0 clientes</p>
+          </div>
+          <button class="btn btn-primary" onclick="ClientsPage.openCreate()">
+            ＋ Novo Cliente
+          </button>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <div class="filter-search-wrap" style="display:inline-flex">
+            <span style="color:var(--tx-4);font-size:12px">🔍</span>
+            <input type="text" placeholder="Buscar por nome, e-mail ou empresa…"
+              id="clientSearchInput" style="width:280px"
+              oninput="ClientsPage.setSearch(this.value)" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="clients-grid" id="clientsGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--tx-4)">
+            Carregando…
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="clientModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="clientModalTitle">👤 Novo Cliente</span>
+      <button class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="cliForm" onsubmit="event.preventDefault(); ClientsPage.save()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cliName">Nome *</label>
+            <input class="form-control" id="cliName" type="text"
+              placeholder="Nome ou razão social…" required />
+          </div>
+          <div class="form-group">
+            <label for="cliCompany">Empresa</label>
+            <input class="form-control" id="cliCompany" type="text"
+              placeholder="Nome da empresa…" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cliEmail">E-mail</label>
+            <input class="form-control" id="cliEmail" type="email"
+              placeholder="email@empresa.com" />
+          </div>
+          <div class="form-group">
+            <label for="cliPhone">Telefone</label>
+            <input class="form-control" id="cliPhone" type="text"
+              placeholder="(00) 00000-0000" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="Modal.closeAll()">Cancelar</button>
+      <button class="btn btn-primary" onclick="ClientsPage.save()">Salvar Cliente</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-backdrop" id="historyModal">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <span class="modal-title">📋 Histórico do Cliente</span>
+      <button class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body" id="historyContent"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="Modal.closeAll()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-head">
+      <span class="modal-title">Confirmar ação</span>
+      <button class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-body">
+        <div class="confirm-icon">⚠️</div>
+        <div class="confirm-title" id="confirmTitle">Tem certeza?</div>
+        <div class="confirm-text" id="confirmText">Esta ação não pode ser desfeita.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="Modal.closeAll()">Cancelar</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/clients.js"></script>
+
+<script>
+  (function () {
+    // Auth guard
+    const session = Storage.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    Storage.seed();
+
+    // User info
+    const display = session.display || session.username;
+    document.getElementById('userDisplayName').textContent = display;
+    document.getElementById('userRoleLabel').textContent   = session.role;
+    document.getElementById('userAvatarText').textContent  =
+      display.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      Storage.clearSession();
+      window.location.href = 'login.html';
+    });
+
+    // Mobile sidebar
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      sidebar.classList.add('mobile-open');
+      overlay.style.display = 'block';
+    });
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('mobile-open');
+      overlay.style.display = 'none';
+    });
+
+    // Ticket badge
+    document.getElementById('ticketNavBadge').textContent =
+      Storage.getTickets().filter(t => t.status === 'open').length;
+
+    // Helpers required by ClientsPage
+    window.H = {
+      esc: s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),
+      fmtDate: d => {
+        if (!d) return '—';
+        try {
+          const dt = new Date(d.length === 10 ? d + 'T12:00:00' : d);
+          return dt.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+        } catch { return d; }
+      },
+      statusBadge: s => {
+        const m = { open:['b-open','Aberto'], progress:['b-progress','Em andamento'], resolved:['b-resolved','Resolvido'], closed:['b-closed','Fechado'] };
+        const [cls, lbl] = m[s] || ['b-closed', s];
+        return `<span class="badge ${cls}">${lbl}</span>`;
+      },
+      priorityBadge: p => {
+        const m = { low:['pil-low','↓ Baixa'], medium:['pil-med','→ Média'], high:['pil-high','↑ Alta'], urgent:['pil-urgent','🔴 Urgente'] };
+        const [cls, lbl] = m[p] || ['pil-low', p];
+        return `<span class="pil ${cls}">${lbl}</span>`;
+      },
+      avatarGradient: name => {
+        const palette = [
+          'linear-gradient(135deg,#5b8af4,#9b7ef8)',
+          'linear-gradient(135deg,#27c98f,#22d3ee)',
+          'linear-gradient(135deg,#f5a623,#ff6b35)',
+          'linear-gradient(135deg,#e84545,#f5a623)',
+          'linear-gradient(135deg,#9b7ef8,#e84585)',
+          'linear-gradient(135deg,#22d3ee,#5b8af4)',
+        ];
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+        return palette[Math.abs(h) % palette.length];
+      },
+      initials: name => name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase(),
+    };
+
+    // Render
+    ClientsPage.render();
+  })();
+</script>
+
+</body>
+</html>

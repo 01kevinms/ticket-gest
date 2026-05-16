@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tickets — TicketMS</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  
+  <div class="sidebar-overlay" id="sidebarOverlay" style="display:none"></div>
+  
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">🎫</div>
+        <div class="sidebar-logo-text">Ticket<span>MS</span></div>
+      </div>
+    </div>
+
+    <nav class="sidebar-body">
+      <div class="nav-section-label">Principal</div>
+
+      <a class="nav-item" href="index.html">
+        <span class="nav-item-icon">📊</span>
+        Dashboard
+      </a>
+
+      <a class="nav-item active" href="tickets.html">
+        <span class="nav-item-icon">🎫</span>
+        Tickets
+        <span class="nav-badge" id="ticketNavBadge">0</span>
+      </a>
+
+      <div class="nav-section-label">Gestão</div>
+
+      <a class="nav-item" href="clients.html">
+        <span class="nav-item-icon">👥</span>
+        Clientes
+      </a>
+
+      <a class="nav-item" href="reports.html">
+        <span class="nav-item-icon">📈</span>
+        Relatórios
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user-card">
+        <div class="user-avatar">
+          <span id="userAvatarText">A</span>
+        </div>
+        <div class="user-meta">
+          <div class="user-name" id="userDisplayName">Admin</div>
+          <div class="user-role" id="userRoleLabel">Administrador</div>
+        </div>
+        <button class="logout-btn" id="logoutBtn" title="Sair">↩</button>
+      </div>
+    </div>
+  </aside>
+
+  
+  <div class="main-content">
+
+    
+    <header class="topbar">
+      <button class="topbar-toggle" id="sidebarToggle">☰</button>
+      <div class="topbar-info">
+        <h2>Tickets</h2>
+        <p id="ticketsSubtitle">Gerenciar chamados</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="search-field">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="globalSearchInput" placeholder="Pesquisar…"
+            autocomplete="off" oninput="TicketsPage.setFilter('search', this.value)" />
+        </div>
+        <button class="btn btn-primary" onclick="TicketsPage.openCreate()">
+          ＋ Novo Ticket
+        </button>
+      </div>
+    </header>
+
+    <div class="page-wrap">
+      <div class="page active" id="page-tickets">
+
+        <div class="page-header">
+          <div class="page-header-text">
+            <h2>Tickets</h2>
+            <p id="ticketsCount">0 tickets</p>
+          </div>
+          <button class="btn btn-primary" onclick="TicketsPage.openCreate()">
+            ＋ Novo Ticket
+          </button>
+        </div>
+
+        <div class="card">
+          
+          <div class="filter-bar">
+            <span class="filter-label">Filtros:</span>
+
+            <select class="filter-select" id="filterStatus"
+              onchange="TicketsPage.setFilter('status', this.value)">
+              <option value="">Todos os status</option>
+              <option value="open">Aberto</option>
+              <option value="progress">Em andamento</option>
+              <option value="resolved">Resolvido</option>
+              <option value="closed">Fechado</option>
+            </select>
+
+            <select class="filter-select" id="filterPriority"
+              onchange="TicketsPage.setFilter('priority', this.value)">
+              <option value="">Todas as prioridades</option>
+              <option value="urgent">Urgente</option>
+              <option value="high">Alta</option>
+              <option value="medium">Média</option>
+              <option value="low">Baixa</option>
+            </select>
+
+            <div class="filter-spacer"></div>
+
+            <div class="filter-search-wrap">
+              <span style="color:var(--tx-4);font-size:12px">🔍</span>
+              <input type="text" placeholder="Buscar tickets…" id="ticketSearchInput"
+                oninput="TicketsPage.setFilter('search', this.value)" autocomplete="off" />
+            </div>
+          </div>
+
+          
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Cliente</th>
+                  <th>Status</th>
+                  <th>Prioridade</th>
+                  <th>Criado em</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="ticketsTbody">
+                <tr>
+                  <td colspan="7" style="text-align:center;padding:60px;color:var(--tx-4)">
+                    Carregando…
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+     MODALS
+══════════════════════════════════════════════════════════ -->
+
+
+<div class="modal-backdrop" id="ticketModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="modal-title" id="ticketModalTitle">🎫 Novo Ticket</span>
+      <button class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="tkForm" onsubmit="event.preventDefault(); TicketsPage.save()">
+        <div class="form-group">
+          <label for="tkTitle">Título *</label>
+          <input class="form-control" id="tkTitle" type="text"
+            placeholder="Descreva o problema resumidamente…" required />
+        </div>
+        <div class="form-group">
+          <label for="tkDescription">Descrição</label>
+          <textarea class="form-control" id="tkDescription"
+            placeholder="Detalhes completos sobre o problema…"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tkClientId">Cliente</label>
+            <select class="form-control" id="tkClientId">
+              <option value="">Selecione o cliente…</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tkAssignee">Responsável</label>
+            <input class="form-control" id="tkAssignee" type="text"
+              placeholder="Nome do responsável…" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tkPriority">Prioridade</label>
+            <select class="form-control" id="tkPriority">
+              <option value="low">↓ Baixa</option>
+              <option value="medium" selected>→ Média</option>
+              <option value="high">↑ Alta</option>
+              <option value="urgent">🔴 Urgente</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tkStatus">Status</label>
+            <select class="form-control" id="tkStatus">
+              <option value="open" selected>Aberto</option>
+              <option value="progress">Em andamento</option>
+              <option value="resolved">Resolvido</option>
+              <option value="closed">Fechado</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="Modal.closeAll()">Cancelar</button>
+      <button class="btn btn-primary" onclick="TicketsPage.save()">Salvar Ticket</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-backdrop" id="detailModal">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <span class="modal-title">📋 Detalhes do Ticket</span>
+      <button class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body" id="detailContent"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="Modal.closeAll()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal" style="max-width:430px">
+    <div class="modal-head">
+      <span class="modal-title">Confirmar ação</span>
+      <button class="modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="confirm-body">
+        <div class="confirm-icon">⚠️</div>
+        <div class="confirm-title" id="confirmTitle">Tem certeza?</div>
+        <div class="confirm-text" id="confirmText">Esta ação não pode ser desfeita.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="Modal.closeAll()">Cancelar</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/tickets.js"></script>
+
+<script>
+  // ─── Page bootstrap ───────────────────────────────────────
+  (function () {
+    // Auth guard
+    const session = Storage.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    Storage.seed();
+
+    // Fill user info
+    const display = session.display || session.username;
+    document.getElementById('userDisplayName').textContent = display;
+    document.getElementById('userRoleLabel').textContent   = session.role;
+    document.getElementById('userAvatarText').textContent  =
+      display.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      Storage.clearSession();
+      window.location.href = 'login.html';
+    });
+
+    // Mobile sidebar
+    const sidebar  = document.getElementById('appSidebar');
+    const overlay  = document.getElementById('sidebarOverlay');
+    const toggle   = document.getElementById('sidebarToggle');
+    toggle.addEventListener('click', () => {
+      sidebar.classList.add('mobile-open');
+      overlay.style.display = 'block';
+    });
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('mobile-open');
+      overlay.style.display = 'none';
+    });
+
+    // Ticket badge
+    const openCount = Storage.getTickets().filter(t => t.status === 'open').length;
+    document.getElementById('ticketNavBadge').textContent = openCount;
+
+    // Helpers required by TicketsPage
+    window.H = {
+      esc: s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),
+      fmtDate: d => {
+        if (!d) return '—';
+        try {
+          const dt = new Date(d.length === 10 ? d + 'T12:00:00' : d);
+          return dt.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+        } catch { return d; }
+      },
+      statusBadge: s => {
+        const m = { open:['b-open','Aberto'], progress:['b-progress','Em andamento'], resolved:['b-resolved','Resolvido'], closed:['b-closed','Fechado'] };
+        const [cls, lbl] = m[s] || ['b-closed', s];
+        return `<span class="badge ${cls}">${lbl}</span>`;
+      },
+      priorityBadge: p => {
+        const m = { low:['pil-low','↓ Baixa'], medium:['pil-med','→ Média'], high:['pil-high','↑ Alta'], urgent:['pil-urgent','🔴 Urgente'] };
+        const [cls, lbl] = m[p] || ['pil-low', p];
+        return `<span class="pil ${cls}">${lbl}</span>`;
+      },
+      statusLabel: s => ({ open:'Aberto', progress:'Em andamento', resolved:'Resolvido', closed:'Fechado' }[s] || s),
+      clientName: id => { const c = Storage.getClient(id); return c ? c.name : (id || '—'); },
+    };
+
+    // Stub for badge refresh (no App object here)
+    window.App = {
+      refreshBadge: () => {
+        const cnt = Storage.getTickets().filter(t => t.status === 'open').length;
+        document.getElementById('ticketNavBadge').textContent = cnt;
+      }
+    };
+
+    // Render table
+    TicketsPage.render();
+  })();
+</script>
+
+</body>
+</html>
